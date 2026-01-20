@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RoundLauncher</string>
+    <string name="app_launch_error">No es posible lanzar esta aplicación</string>
+    <string name="loading_appList">Cargando aplicaciones...</string>
+</resources>
