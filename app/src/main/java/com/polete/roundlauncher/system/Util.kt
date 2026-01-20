@@ -1,13 +1,8 @@
 package com.polete.roundlauncher.system
 
-import android.app.WallpaperManager
 import android.content.Context
 import android.content.pm.LauncherApps
-import android.graphics.Bitmap
-import android.graphics.Bitmap.Config
-import android.graphics.drawable.Drawable
 import android.os.UserManager
-import androidx.core.graphics.drawable.toBitmap
 import com.polete.roundlauncher.data.AppModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,35 +37,6 @@ suspend fun getAppList(c: Context) : List<AppModule> = withContext(Dispatchers.I
     return@withContext appList
 
 }
-
-/**
- * Returns the Bitmap of the wallpaper in use
- */
-suspend fun getWallpaperBitMap(c: Context) : Bitmap? = withContext(Dispatchers.Default) {
-
-    val drawable = getWallpaperDrawable(c)
-
-    return@withContext drawable?.toBitmap(
-        width = drawable.intrinsicWidth,
-        height = drawable.intrinsicHeight,
-        config = Config.ARGB_8888
-    )
-
-}
-
-/**
- * Just to get the wallpaper drawable
- */
-private fun getWallpaperDrawable(c: Context) : Drawable? {
-    val wpManager = WallpaperManager.getInstance(c)
-    return try {
-        wpManager.drawable
-    } catch (_: SecurityException) {
-        null
-    }
-}
-
-
 
 fun launchApp(c: Context, appModule: AppModule) {
     val launcherApps = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps

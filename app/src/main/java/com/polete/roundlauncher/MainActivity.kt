@@ -7,14 +7,12 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
+import com.polete.roundlauncher.navigation.AppNavigation
 import com.polete.roundlauncher.system.RLBroadcastReceiver
-import com.polete.roundlauncher.system.launchApp
-import com.polete.roundlauncher.ui.components.HomePage
-import com.polete.roundlauncher.ui.components.WallpaperBox
 import com.polete.roundlauncher.ui.theme.RoundLauncherTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,10 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RoundLauncherTheme {
-                HomePage(
-                    viewModel,
-                    { launchApp(this, it) }
-                )
+                AppNavigation(viewModel, this, Modifier.fillMaxSize().systemBarsPadding())
             }
         }
     }
@@ -48,10 +43,8 @@ class MainActivity : ComponentActivity() {
             addAction(Intent.ACTION_PACKAGE_REMOVED)
             addAction(Intent.ACTION_PACKAGE_CHANGED)
             addDataScheme("package")
-            addAction(Intent.ACTION_WALLPAPER_CHANGED)
         }
         registerReceiver(broadcastReceiver, filter)
-        WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER
     }
 
     override fun onPause() {
