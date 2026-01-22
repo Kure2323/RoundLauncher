@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.polete.roundlauncher.MainViewModel
-import com.polete.roundlauncher.system.launchApp
+import com.polete.roundlauncher.system.launchUApp
 import com.polete.roundlauncher.ui.components.HomePage
 
 @Composable
@@ -29,7 +29,7 @@ fun AppNavigation(
             HomePage(
                 viewModel = viewModel,
                 onAppClick = { app ->
-                    launchApp(c, app)
+                    launchUApp(c, app)
                 },
                 modifier = modifier
             )

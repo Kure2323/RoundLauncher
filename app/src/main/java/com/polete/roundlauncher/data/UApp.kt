@@ -4,10 +4,9 @@ import android.content.ComponentName
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
 
-data class AppModule(
-    val label: String,
+data class UApp(
     val packageName: String,
-    val drawable: Drawable?,
+    val label: String,
     val componentName: ComponentName,
     val user: UserHandle
 )
