@@ -7,11 +7,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.UserManager
+import androidx.core.graphics.createBitmap
 import com.polete.roundlauncher.data.UApp
-import com.polete.roundlauncher.data.entities.AppEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import androidx.core.graphics.createBitmap
+
 
 /**
  * Returns the list of Apps without any order
@@ -43,23 +43,23 @@ suspend fun getAppList(c: Context) : List<UApp> = withContext(Dispatchers.IO){
 
 }
 
-fun formalizeApp(c: Context, appEntity: AppEntity): UApp {
-    val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-    val urm = c.getSystemService(Context.USER_SERVICE) as UserManager
-
-    val pkgname = appEntity.pkgname
-    val user = urm.getUserForSerialNumber(appEntity.userSerialNumber)
-
-    val activityInfo = lam.getActivityList(pkgname, user).first()
-
-    return UApp(
-        packageName = pkgname,
-        label = activityInfo.label.toString(),
-        componentName = activityInfo.componentName,
-        user = user
-    )
-
-}
+//fun formalizeApp(c: Context, appEntity: AppEntity): UApp {
+//    val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+//    val urm = c.getSystemService(Context.USER_SERVICE) as UserManager
+//
+//    val pkgname = appEntity.pkgname
+//    val user = urm.getUserForSerialNumber(appEntity.userSerialNumber)
+//
+//    val activityInfo = lam.getActivityList(pkgname, user).first()
+//
+//    return UApp(
+//        packageName = pkgname,
+//        label = activityInfo.label.toString(),
+//        componentName = activityInfo.componentName,
+//        user = user
+//    )
+//
+//}
 
 fun launchUApp(c: Context, app: UApp) {
     val launcherApps = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
