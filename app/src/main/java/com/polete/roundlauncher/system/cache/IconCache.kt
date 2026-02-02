@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 class IconCache(private val c: Context) {
 
-    private val cache = LruCache<String, ImageBitmap>(100)
+    private val cache = LruCache<String, ImageBitmap>(200)
 
     suspend fun getIcon(uApp: UApp): ImageBitmap = withContext(Dispatchers.IO) {
         val key = "${uApp.packageName}-${uApp.user.hashCode()}"
