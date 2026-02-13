@@ -23,12 +23,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
 
@@ -36,7 +42,7 @@ import com.polete.roundlauncher.data.UApp
 @Composable
 fun Drawer(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(),
     searchBar: @Composable () -> Unit,
     onAppClick: (UApp) -> Unit,
     onSettingsClick: () -> Unit
@@ -96,6 +102,7 @@ fun Drawer(
                 AppGrid(
                     viewModel = viewModel
                 ) { app -> onAppClick(app) }
+
             }
 
 
@@ -107,12 +114,29 @@ fun Drawer(
 
 @Composable
 fun AppGrid(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier,
     viewModel: MainViewModel,
     onAppClick: (UApp) -> Unit
-    ) {
+) {
 
-    val appList by viewModel.apps.collectAsStateWithLifecycle()
+    val icons = remember { mutableStateMapOf<String, ImageBitmap>() }
+    var appList by remember { mutableStateOf<List<UApp>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+
+        appList = viewModel.getApps()
+
+        appList.forEach { app ->
+            val key = "${app.packageName}-${app.user.hashCode()}"
+
+            if (!icons.containsKey(key)) {
+                val icon = viewModel.getIcon(app) // debe estar en Dispatchers.IO
+                icons[key] = icon
+            }
+        }
+    }
+
+
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(4), // 4 columnas
@@ -121,11 +145,15 @@ fun AppGrid(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(appList, key = { it.packageName + it.user.hashCode() }) { app ->
-            AppIcon(app = app, viewModel = viewModel) {
+        items(appList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
+            val key = "${app.packageName}-${app.user.hashCode()}"
+            val icon = icons[key]
+
+            AppIcon(app = app, imageBitmap = icon) {
                 onAppClick(app)
             }
+
         }
     }
-    
+
 }

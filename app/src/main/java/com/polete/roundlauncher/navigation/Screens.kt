@@ -1,14 +1,10 @@
 package com.polete.roundlauncher.navigation
 
-sealed class Screens() {
+sealed class Screens(val route: String) {
 
-    object HomePage: Screens() {
-        val route = "home_page"
-    }
+    object HomePage: Screens("home_page")
 
-    object Settings: Screens() {
-        val route = "settings_page"
-    }
+    // object Settings: Screens("settings_page")
 
 
 

@@ -11,27 +11,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
 
 @Composable
 fun AppIcon(
     app: UApp,
-    viewModel: MainViewModel,
+    imageBitmap: ImageBitmap?,
     modifier: Modifier = Modifier,
     onClick: (UApp) -> Unit
 ) {
 
-    val appicon by viewModel.getIcon(app).collectAsStateWithLifecycle()
 
-    appicon?.let {
+
+    imageBitmap?.let {
         Column(
             modifier = modifier.fillMaxSize()
                 .clickable {
@@ -41,7 +39,7 @@ fun AppIcon(
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Image(
-                bitmap = appicon!!,
+                bitmap = imageBitmap,
                 contentDescription = app.label,
                 modifier = modifier.size(48.dp),
                 contentScale = ContentScale.Fit

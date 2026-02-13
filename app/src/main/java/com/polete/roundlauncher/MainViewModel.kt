@@ -1,24 +1,20 @@
 package com.polete.roundlauncher
 
+import android.app.Application
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.polete.roundlauncher.data.UApp
-import com.polete.roundlauncher.system.cache.AppCache
-import com.polete.roundlauncher.system.cache.IconCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class MainViewModel(
-    private val iconCache: IconCache,
-    private val appCache: AppCache
-) : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val appCache = Container.appCache
+    private val iconCache = Container.iconCache
     private val _apps = MutableStateFlow<List<UApp>>(emptyList())
     val apps: StateFlow<List<UApp>> = _apps.asStateFlow()
 
@@ -27,7 +23,7 @@ class MainViewModel(
     }
 
     fun reloadApps() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _apps.value = appCache.getApps()
             preloadIcons(_apps.value)
         }
@@ -44,10 +40,18 @@ class MainViewModel(
 
     // IconCache
     private val _icons = mutableMapOf<String, MutableStateFlow<ImageBitmap?>>()
-    val icons = _icons
+    val icons get() = _icons
 
     fun clearIcons() {
         _icons.clear()
+    }
+
+    suspend fun getIcon(uApp: UApp): ImageBitmap {
+        return iconCache.getIcon(uApp)
+    }
+
+    suspend fun getApps(): List<UApp> {
+        return appCache.getApps()
     }
 
     fun preloadIcons(uApps: List<UApp>) {
@@ -69,34 +73,5 @@ class MainViewModel(
 
     }
 
-    fun getIcon(uApp: UApp): StateFlow<ImageBitmap?> {
-        val key = "${uApp.packageName}-${uApp.user.hashCode()}"
-        return _icons.getOrPut(key) {
-            MutableStateFlow<ImageBitmap?>(null).also { flow ->
-                viewModelScope.launch {
-                    val bitmap = iconCache.getIcon(uApp)
-                    flow.value = bitmap
-                }
-            }
-        }
-    }
 
-
-}
-
-class MainViewModelFactory(
-    private val iconCache: IconCache,
-    private val appCache: AppCache
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(
-                iconCache,
-                appCache
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
 }
