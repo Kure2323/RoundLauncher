@@ -1,4 +1,4 @@
-package com.polete.roundlauncher.ui.components
+package com.polete.roundlauncher.ui.drawpage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,31 +22,39 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
+import com.polete.roundlauncher.navigation.Screens
+import com.polete.roundlauncher.ui.components.AppIcon
 
 
 @Composable
-fun Drawer(
+fun DrawerPage(
+    navController: NavHostController,
+    onAppClick: (UApp) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
-    searchBar: @Composable () -> Unit,
-    onAppClick: (UApp) -> Unit,
-    onSettingsClick: () -> Unit
-) {
+    appList: List<UApp>,
+    icons: SnapshotStateMap<String, ImageBitmap>,
+    ) {
+
+    var searchText by remember {
+        mutableStateOf("")
+    }
 
     Box(
         modifier = modifier
@@ -73,7 +81,7 @@ fun Drawer(
                     modifier = modifier
                         .size(56.dp)
                         .background(Color.Black.copy(0.2f))
-                        .clickable { onSettingsClick() },
+                        .clickable { navController.navigate(Screens.Settings.route) },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -88,7 +96,17 @@ fun Drawer(
                     modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(0.2f))
-                ) { searchBar() }
+                ) {
+
+                    // SearchBar
+
+                    OutlinedTextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        modifier = modifier.fillMaxSize()
+                    )
+
+                }
 
             }
 
@@ -100,8 +118,12 @@ fun Drawer(
                     .background(color = Color.Black.copy(0.2f))
             ) {
                 AppGrid(
-                    viewModel = viewModel
-                ) { app -> onAppClick(app) }
+                    searchText = searchText.trim(),
+                    modifier = modifier,
+                    icons = icons,
+                    appList = appList,
+                    onAppClick = { app -> onAppClick(app) }
+                )
 
             }
 
@@ -115,37 +137,22 @@ fun Drawer(
 @Composable
 fun AppGrid(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
-    onAppClick: (UApp) -> Unit
+    searchText: String,
+    onAppClick: (UApp) -> Unit,
+    icons: SnapshotStateMap<String, ImageBitmap>,
+    appList: List<UApp>
 ) {
 
-    val icons = remember { mutableStateMapOf<String, ImageBitmap>() }
-    var appList by remember { mutableStateOf<List<UApp>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-
-        appList = viewModel.getApps()
-
-        appList.forEach { app ->
-            val key = "${app.packageName}-${app.user.hashCode()}"
-
-            if (!icons.containsKey(key)) {
-                val icon = viewModel.getIcon(app) // debe estar en Dispatchers.IO
-                icons[key] = icon
-            }
-        }
-    }
-
-
-
     LazyVerticalGrid(
-        columns = GridCells.Fixed(4), // 4 columnas
+        columns = GridCells.Fixed(5), // 4 columnas
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(appList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
+        items(appList.filter{
+            it.label.lowercase().contains(searchText.lowercase())
+        }, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
             val key = "${app.packageName}-${app.user.hashCode()}"
             val icon = icons[key]
 

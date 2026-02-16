@@ -27,8 +27,6 @@ fun AppIcon(
     onClick: (UApp) -> Unit
 ) {
 
-
-
     imageBitmap?.let {
         Column(
             modifier = modifier.fillMaxSize()
@@ -54,6 +52,7 @@ fun AppIcon(
             )
         }
     }
+
 }
 
 
