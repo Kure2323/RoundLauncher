@@ -14,35 +14,23 @@ class AppCache(c: Context) {
 
     private var cacheApps: List<UApp>? = null
 
-    suspend fun getApps(): List<UApp> {
+    suspend fun getApps(): List<UApp> = withContext(Dispatchers.IO) {
 
-        cacheApps?.let { return it }
+        cacheApps?.let { return@withContext it }
 
-        return withContext(Dispatchers.IO) {
-
-            val appList = mutableListOf<UApp>()
-
-            for (user in userManager.userProfiles) {
-
-                for (app in launcherApps.getActivityList(null, user)) {
-
-                    appList.add(
-                        UApp(
-                            label = app.label.toString(),
-                            packageName = app.applicationInfo.packageName,
-                            componentName = app.componentName,
-                            user = user
-                        )
-                    )
-
-                }
-
+        val appList = userManager.userProfiles.flatMap { user ->
+            launcherApps.getActivityList(null, user).map { app ->
+                UApp(
+                    label = app.label.toString(),
+                    packageName = app.applicationInfo.packageName,
+                    componentName = app.componentName,
+                    user = user
+                )
             }
-
-            cacheApps = appList // Save on Ram :)))
-            return@withContext appList
-
         }
+
+        cacheApps = appList
+        appList
     }
 
     fun clearCache() {

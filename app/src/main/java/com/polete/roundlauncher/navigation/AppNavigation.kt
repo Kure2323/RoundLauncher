@@ -22,6 +22,8 @@ import com.polete.roundlauncher.data.UApp
 import com.polete.roundlauncher.system.launchUApp
 import com.polete.roundlauncher.ui.drawpage.DrawerPage
 import com.polete.roundlauncher.ui.homepage.HomePage
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavigation(c: Context) {
@@ -36,15 +38,23 @@ fun AppNavigation(c: Context) {
 
         appList = viewModel.getApps()
 
-        appList.forEach { app ->
-            val key = "${app.packageName}-${app.user.hashCode()}"
+        coroutineScope {
+            appList.forEach { app ->
 
-            if (!icons.containsKey(key)) {
-                val icon = viewModel.getIcon(app)
-                icons[key] = icon
+                val key = "${app.packageName}-${app.user.hashCode()}"
+
+                if (!icons.containsKey(key)) {
+
+                    launch {
+                        val icon = viewModel.getIcon(app)
+                        icons[key] = icon
+                    }
+
+                }
             }
         }
     }
+
 
     NavHost(
         navController = navController,

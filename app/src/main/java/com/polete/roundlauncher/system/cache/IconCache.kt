@@ -13,12 +13,12 @@ import kotlinx.coroutines.withContext
 class IconCache(private val c: Context) {
 
     private val cache = LruCache<String, ImageBitmap>(200)
-
+    private val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
     suspend fun getIcon(uApp: UApp): ImageBitmap = withContext(Dispatchers.IO) {
         val key = "${uApp.packageName}-${uApp.user.hashCode()}"
         cache.get(key)?.let { return@withContext it }
 
-        val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+
         val drawable = lam.getActivityList(uApp.packageName, uApp.user)
             .firstOrNull()?.getIcon(0)
             ?: c.getDrawable(android.R.drawable.sym_def_app_icon)!!
