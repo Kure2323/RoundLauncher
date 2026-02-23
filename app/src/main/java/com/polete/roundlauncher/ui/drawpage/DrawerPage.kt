@@ -1,7 +1,9 @@
 package com.polete.roundlauncher.ui.drawpage
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +21,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +36,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -45,12 +48,13 @@ import com.polete.roundlauncher.ui.components.AppIcon
 @Composable
 fun DrawerPage(
     navController: NavHostController,
-    onAppClick: (UApp) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
     appList: List<UApp>,
-    icons: SnapshotStateMap<String, ImageBitmap>,
+    icons: SnapshotStateMap<String, Bitmap>,
     ) {
+
+    val interactionSource = remember { MutableInteractionSource() }
 
     var searchText by remember {
         mutableStateOf("")
@@ -59,6 +63,9 @@ fun DrawerPage(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .clickable(interactionSource = interactionSource, indication = null) {
+                navController.navigate(Screens.HomePage.route)
+            }
             .windowInsetsPadding(WindowInsets.statusBars)
             .padding(
                 start = 20.dp,
@@ -118,11 +125,13 @@ fun DrawerPage(
                     .background(color = Color.Black.copy(0.2f))
             ) {
                 AppGrid(
-                    searchText = searchText.trim(),
-                    modifier = modifier,
+                    searchText = searchText.trim().lowercase(),
                     icons = icons,
                     appList = appList,
-                    onAppClick = { app -> onAppClick(app) }
+                    onAppClick = { app ->
+                        viewModel.launchUApp(app)
+                        navController.navigate(Screens.HomePage.route)
+                    }
                 )
 
             }
@@ -139,24 +148,30 @@ fun AppGrid(
     modifier: Modifier = Modifier,
     searchText: String,
     onAppClick: (UApp) -> Unit,
-    icons: SnapshotStateMap<String, ImageBitmap>,
+    icons: SnapshotStateMap<String, Bitmap>,
     appList: List<UApp>
 ) {
 
+    val scrollState = rememberLazyGridState()
+    val filteredList = remember(searchText, appList) {
+        appList.filter {
+            it.label.lowercase().contains(searchText)
+        }
+    }
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(5), // 4 columnas
+        columns = GridCells.Fixed(4), // 4 columnas
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(16.dp),
+        state = scrollState
     ) {
-        items(appList.filter{
-            it.label.lowercase().contains(searchText.lowercase())
-        }, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
+        items(filteredList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
             val key = "${app.packageName}-${app.user.hashCode()}"
             val icon = icons[key]
 
-            AppIcon(app = app, imageBitmap = icon) {
+            AppIcon(app = app, bitmap = icon) {
                 onAppClick(app)
             }
 

@@ -1,6 +1,7 @@
 package com.polete.roundlauncher.navigation
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,7 @@ fun AppNavigation(c: Context) {
     val navController = rememberNavController()
     val viewModel: MainViewModel = viewModel()
 
-    val icons = remember { mutableStateMapOf<String, ImageBitmap>() }
+    val icons = remember { mutableStateMapOf<String, Bitmap>() }
     var appList by remember { mutableStateOf<List<UApp>>(emptyList()) }
 
     LaunchedEffect(Unit) {
@@ -63,29 +64,20 @@ fun AppNavigation(c: Context) {
 
         composable(Screens.DrawPage.route) {
 
-            Box(
-                Modifier.fillMaxSize().clickable {
-                    navController.navigate(Screens.HomePage.route)
-                }
-            ) {
-                DrawerPage(
-                    navController,
-                    onAppClick = { launchUApp(c, it) },
-                    viewModel = viewModel,
-                    modifier = Modifier,
-                    appList = appList,
-                    icons = icons
-                )
-
-            }
+            DrawerPage(
+                navController,
+                viewModel = viewModel,
+                modifier = Modifier,
+                appList = appList,
+                icons = icons
+            )
 
         }
 
         composable(Screens.HomePage.route) {
 
             HomePage(
-                navController,
-                onAppClick = { launchUApp(c, it) }
+                navController
             )
 
         }
