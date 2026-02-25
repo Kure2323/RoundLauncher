@@ -8,10 +8,9 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.polete.roundlauncher.data.UApp
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -22,6 +21,9 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private val _appList = MutableStateFlow<List<UApp>>(emptyList())
     val appList: StateFlow<List<UApp>> = _appList
 
+    private val _iconList = MutableStateFlow<Map<String, Bitmap>>(emptyMap())
+    val iconList = _iconList
+
     init {
         loadApps()
     }
@@ -29,14 +31,17 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private fun loadApps() {
         viewModelScope.launch {
             _appList.value = appCache.getApps()
+            appList.value.forEach { app ->
+                val key = "${app.packageName}-${app.user.hashCode()}"
+                _iconList.update {
+                    it + (key to getIcon(app))
+                }
+            }
         }
     }
 
     suspend fun getIcon(uApp: UApp): Bitmap {
         return iconCache.getIcon(uApp)
-    }
-    suspend fun getApps(): List<UApp> {
-        return appCache.getApps()
     }
 
     fun launchUApp(app: UApp) {
