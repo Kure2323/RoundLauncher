@@ -14,7 +14,7 @@ import com.polete.roundlauncher.navigation.Screens
 
 @Composable
 fun HomePage(
-    navController: NavHostController,
+    onBackgroundClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel()
     ) {
@@ -26,7 +26,7 @@ fun HomePage(
         modifier
             .fillMaxSize()
             .clickable(indication = null, interactionSource = interactionSource) {
-                navController.navigate(Screens.DrawPage.route)
+                onBackgroundClick()
             }
     ) {
 

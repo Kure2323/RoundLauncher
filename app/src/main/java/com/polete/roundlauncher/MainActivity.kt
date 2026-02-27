@@ -13,6 +13,9 @@ import com.polete.roundlauncher.navigation.AppNavigation
 import com.polete.roundlauncher.system.RLBroadcastReceiver
 import com.polete.roundlauncher.ui.theme.RoundLauncherTheme
 
+/**
+ * author: Polete
+ */
 class MainActivity : ComponentActivity() {
 
     //Broadcast
@@ -32,7 +35,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RoundLauncherTheme {
-                AppNavigation(this)
+                AppNavigation()
             }
         }
     }

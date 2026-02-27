@@ -24,15 +24,19 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,21 +46,22 @@ import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
 import com.polete.roundlauncher.navigation.Screens
 import com.polete.roundlauncher.ui.components.AppIcon
+import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawerPage(
-    navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
+    sheetState: SheetState
     ) {
 
     // Data for getting and showing icons
     val appList by viewModel.appList.collectAsStateWithLifecycle()
     val iconList by viewModel.iconList.collectAsStateWithLifecycle()
 
-    // Just for not showing the touch animation
-    val interactionSource = remember { MutableInteractionSource() }
+    val scope = rememberCoroutineScope()
 
     var searchText by remember {
         mutableStateOf("")
@@ -65,14 +70,9 @@ fun DrawerPage(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .clickable(interactionSource = interactionSource, indication = null) {
-                navController.navigate(Screens.HomePage.route)
-            }
-            .windowInsetsPadding(WindowInsets.statusBars)
             .padding(
                 start = 20.dp,
                 end = 20.dp,
-                top = 20.dp
             )
     ) {
 
@@ -88,9 +88,7 @@ fun DrawerPage(
 
                 Box(
                     modifier = modifier
-                        .size(56.dp)
-                        .background(Color.Black.copy(0.2f))
-                        .clickable { navController.navigate(Screens.Settings.route) },
+                        .size(56.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -104,7 +102,6 @@ fun DrawerPage(
                 Box(
                     modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(0.2f))
                 ) {
 
                     /*** SearchBar ***/
@@ -123,14 +120,15 @@ fun DrawerPage(
             Box(
                 modifier
                     .fillMaxSize()
-                    .background(color = Color.Black.copy(0.2f))
             ) {
                 /*** Cajón de aplicaciones ***/
                 AppGrid(
                     searchText = searchText.trim().lowercase(),
                     onAppClick = { app ->
                         viewModel.launchUApp(app)
-                        navController.navigate(Screens.HomePage.route)
+                        scope.launch {
+                            sheetState.hide()
+                        }
                     },
                     appList = appList,
                     iconList = iconList
@@ -162,12 +160,17 @@ fun AppGrid(
         }
     }
 
+    // Si la búsqueda de apps se reduce a 1, este se ejecuta
+    if (filteredList.size == 1) {
+        onAppClick(filteredList.first())
+    }
+
     LazyVerticalGrid(
         state = lazyGridState,
         columns = GridCells.Adaptive(48.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(8.dp)
     ) {
         items(filteredList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
             val key = "${app.packageName}-${app.user.hashCode()}"

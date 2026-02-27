@@ -26,8 +26,7 @@ fun AppIcon(
     Box(
         modifier = modifier
             .size(48.dp)
-            .clickable { onClick(app) }
-            .background(androidx.compose.ui.graphics.Color.Gray.copy(alpha = 0.2f)),
+            .clickable { onClick(app) },
         contentAlignment = Alignment.Center
     ) {
         bitmap?.let {
