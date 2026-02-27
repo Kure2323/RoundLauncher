@@ -22,7 +22,7 @@ class IconCache(private val c: Context) {
             .firstOrNull()?.getIcon(0)
             ?: c.getDrawable(android.R.drawable.sym_def_app_icon)!!
 
-        val bitmap = drawable.toBitmap()
+        val bitmap = drawable.toBitmap(height = 48, width = 48)
         cache.put(key, bitmap)
         return@withContext bitmap
     }

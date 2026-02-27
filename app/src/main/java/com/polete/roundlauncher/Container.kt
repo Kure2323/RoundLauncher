@@ -6,6 +6,7 @@ import com.polete.roundlauncher.system.cache.IconCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 object Container {
 
@@ -18,6 +19,11 @@ object Container {
 
     // Scope
     lateinit var scope: CoroutineScope
+
+
+    val appsChangedFlow = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1
+    )
 
     fun init(c: Context) {
 

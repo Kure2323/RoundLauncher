@@ -28,6 +28,7 @@ class RLBroadcastReceiver() : BroadcastReceiver() {
         scope.launch {
             appCache.clearCache()
             appCache.getApps()
+            Container.appsChangedFlow.emit(Unit)
         }
     }
 }

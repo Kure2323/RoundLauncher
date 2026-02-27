@@ -2,9 +2,9 @@ package com.polete.roundlauncher.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -18,33 +18,26 @@ import com.polete.roundlauncher.data.UApp
 @Composable
 fun AppIcon(
     app: UApp,
-    bitmap: Bitmap,
+    bitmap: Bitmap?,
     modifier: Modifier = Modifier,
     onClick: (UApp) -> Unit
 ) {
 
-    Column(
-        modifier = modifier.fillMaxSize()
-            .clickable {
-                onClick(app)
-            },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+    Box(
+        modifier = modifier
+            .size(48.dp)
+            .clickable { onClick(app) }
+            .background(androidx.compose.ui.graphics.Color.Gray.copy(alpha = 0.2f)),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = app.label,
-            modifier = modifier.size(48.dp),
-            contentScale = ContentScale.Fit
-        )
-//            Text(
-//                text = app.label,
-//                textAlign = TextAlign.Center,
-//                maxLines = 2,
-//                softWrap = true,
-//                style = MaterialTheme.typography.labelSmall,
-//                modifier = modifier.fillMaxWidth().height(28.dp)
-//            )
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = app.label,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 
 }

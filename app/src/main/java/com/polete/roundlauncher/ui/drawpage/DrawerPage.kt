@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -150,8 +151,10 @@ fun AppGrid(
     searchText: String,
     onAppClick: (UApp) -> Unit,
     appList: List<UApp>,
-    iconList: Map<String, Bitmap>
+    iconList: Map<String, Bitmap?>
 ) {
+
+    val lazyGridState = rememberLazyGridState()
 
     val filteredList = remember(searchText, appList) {
         appList.filter {
@@ -160,26 +163,22 @@ fun AppGrid(
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(5), // 4 columnas
-        modifier = modifier,
+        state = lazyGridState,
+        columns = GridCells.Adaptive(48.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(16.dp)
     ) {
         items(filteredList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
             val key = "${app.packageName}-${app.user.hashCode()}"
-
-            val icon = iconList[key]
-
-            icon?.let {
-                AppIcon(
-                    app = app,
-                    bitmap = it,
-                    onClick = { onAppClick(app) }
-                )
-            }
-
+            val bitmap = iconList[key]
+            AppIcon(
+                app = app,
+                bitmap = bitmap,
+                onClick = { onAppClick(app) }
+            )
         }
+
     }
 
 }
