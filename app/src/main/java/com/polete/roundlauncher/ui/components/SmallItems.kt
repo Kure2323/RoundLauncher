@@ -24,7 +24,7 @@ fun AppIcon(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .size(48.dp)
             .clickable { onClick(app) },
         contentAlignment = Alignment.Center
     ) {
@@ -32,7 +32,7 @@ fun AppIcon(
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = app.label,
-                modifier = modifier.size(48.dp),
+                modifier = modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
         }
