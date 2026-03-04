@@ -1,6 +1,5 @@
 package com.polete.roundlauncher.ui.drawpage
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -146,6 +144,8 @@ fun AppGrid(
     viewModel: MainViewModel = viewModel()
 ) {
 
+    val icons by viewModel.iconList.collectAsStateWithLifecycle()
+
     val lazyGridState = rememberLazyGridState()
 
     val filteredList = remember(searchText, appList) {
@@ -168,17 +168,11 @@ fun AppGrid(
     ) {
         items(filteredList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
 
-            val bitmap = remember {
-                mutableStateOf<Bitmap?>(null)
-            }
-
-            LaunchedEffect(app) {
-                bitmap.value = viewModel.getIcon(app)
-            }
+            val bitmap = icons["${app.packageName}-${app.user.hashCode()}"]
 
             AppIcon(
                 app = app,
-                bitmap = bitmap.value,
+                bitmap = bitmap,
                 onClick = { onAppClick(app) }
             )
         }

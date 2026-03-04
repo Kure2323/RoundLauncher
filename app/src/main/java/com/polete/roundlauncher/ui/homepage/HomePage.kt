@@ -1,6 +1,5 @@
 package com.polete.roundlauncher.ui.homepage
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.MainViewModel
+import com.polete.roundlauncher.data.UApp
 
 @Composable
 fun HomePage(
-    onBackgroundClick: () -> Unit,
+    onHomeInteraction: Modifier.() -> Modifier,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel()
     ) {
@@ -23,11 +23,19 @@ fun HomePage(
     Box(
         modifier
             .fillMaxSize()
-            .clickable(indication = null, interactionSource = interactionSource) {
-                onBackgroundClick()
-            }
+            .onHomeInteraction()
     ) {
 
     }
+
+}
+
+@Composable
+fun RoundLauncher(
+    appList: List<UApp>,
+    modifier: Modifier = Modifier
+    ) {
+
+
 
 }

@@ -21,6 +21,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private val _appList = MutableStateFlow<List<UApp>>(emptyList())
     val appList: StateFlow<List<UApp>> = _appList
 
+    private val _iconList = MutableStateFlow<Map<String, Bitmap>>(emptyMap())
+    val iconList: StateFlow<Map<String, Bitmap>> = _iconList
 
     init {
         loadApps()
@@ -54,12 +56,21 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
                 _appList.value = apps
             }
 
+            val icons = apps.associate {
+                val key = "${it.packageName}-${it.user.hashCode()}"
+                key to getIcon(it)
+            }
+
+            launch(Dispatchers.Main) {
+                _iconList.value = icons
+            }
+
 
         }
     }
 
 
-    suspend fun getIcon(uApp: UApp): Bitmap {
+    private suspend fun getIcon(uApp: UApp): Bitmap {
         return iconCache.getIcon(uApp)
     }
 
