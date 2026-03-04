@@ -39,10 +39,9 @@ fun AppNavigation() {
 
             if (sheetState.isVisible) {
                 ModalBottomSheet(
+                    // When the sheetState turns to hide
                     onDismissRequest = {
-                        scope.launch {
-                            sheetState.hide()
-                        }
+
                     },
                     containerColor = Color.Black.copy(alpha = 0.3f),
                     sheetState = sheetState,
@@ -54,7 +53,6 @@ fun AppNavigation() {
                         sheetState = sheetState
                     )
                 }
-
             }
 
             HomePage(

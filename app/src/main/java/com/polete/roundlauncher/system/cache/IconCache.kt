@@ -3,10 +3,7 @@ package com.polete.roundlauncher.system.cache
 import android.content.Context
 import android.content.pm.LauncherApps
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
 import android.util.LruCache
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.polete.roundlauncher.data.UApp
 import kotlinx.coroutines.Dispatchers

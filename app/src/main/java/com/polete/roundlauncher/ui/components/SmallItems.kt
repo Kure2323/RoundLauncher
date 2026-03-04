@@ -2,7 +2,6 @@ package com.polete.roundlauncher.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,7 @@ fun AppIcon(
 
     Box(
         modifier = modifier
-            .size(48.dp)
+            .fillMaxSize()
             .clickable { onClick(app) },
         contentAlignment = Alignment.Center
     ) {
@@ -33,7 +32,7 @@ fun AppIcon(
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = app.label,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.size(48.dp),
                 contentScale = ContentScale.Fit
             )
         }
