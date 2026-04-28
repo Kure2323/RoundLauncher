@@ -2,21 +2,25 @@ package com.polete.roundlauncher.navigation
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.ui.drawpage.DrawerPage
-import com.polete.roundlauncher.ui.homepage.HomePage
+import com.polete.roundlauncher.ui.homepage.RoundLauncher
 import com.polete.roundlauncher.ui.settingspage.SettingsPage
 import kotlinx.coroutines.launch
 
@@ -26,11 +30,32 @@ fun AppNavigation() {
 
     val navController = rememberNavController()
     val viewModel: MainViewModel = viewModel()
-
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+
     val scope = rememberCoroutineScope()
+
+    val touchPolicy = remember(sheetState, scope) {
+        Modifier.pointerInput(Unit) {
+            detectTapGestures(
+                onTap = {
+                    scope.launch {
+                        sheetState.show()
+                    }
+                },
+                onLongPress = {
+
+                },
+                onPress = {
+
+                }
+            )
+
+        }
+    }
+
+
 
     NavHost(
         navController = navController,
@@ -57,26 +82,19 @@ fun AppNavigation() {
                 }
             }
 
-            HomePage(
-                onHomeInteraction = {
-                    pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = {
-                                scope.launch {
-                                    sheetState.show()
-                                }
-                            },
-                            onDoubleTap = {
-                                scope.launch {
-                                    sheetState.show()
-                                }
-                            },
-                            onLongPress = {},
-                            onPress = {}
-                        )
-
+            RoundLauncher(
+                modifier = Modifier.fillMaxSize(),
+                radiusX = 100.dp,
+                radiusY = 100.dp,
+                viewModel = viewModel,
+                onTap = {
+                    scope.launch {
+                        sheetState.show()
                     }
-                }
+                },
+                onDoubleTap = {},
+                onPress = {},
+                onLongPress = {}
             )
 
         }
