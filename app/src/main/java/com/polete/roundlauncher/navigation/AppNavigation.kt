@@ -77,7 +77,10 @@ fun AppNavigation() {
                 ) {
                     DrawerPage(
                         viewModel = viewModel,
-                        sheetState = sheetState
+                        sheetState = sheetState,
+                        settingsButton = {
+                            navController.navigate(Screens.Settings.route)
+                        }
                     )
                 }
             }
@@ -101,9 +104,6 @@ fun AppNavigation() {
 
         composable(Screens.Settings.route) {
 
-            SettingsPage(
-
-            )
 
         }
 

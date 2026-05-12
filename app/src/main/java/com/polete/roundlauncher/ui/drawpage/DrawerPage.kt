@@ -1,5 +1,6 @@
 package com.polete.roundlauncher.ui.drawpage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,8 @@ import kotlinx.coroutines.launch
 fun DrawerPage(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
-    sheetState: SheetState
+    sheetState: SheetState,
+    settingsButton: () -> Unit
     ) {
 
     // Data for getting and showing icons
@@ -83,7 +85,10 @@ fun DrawerPage(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        modifier = modifier.size(28.dp),
+                        modifier = modifier.size(28.dp).clickable {
+                            scope.launch { sheetState.hide() }
+                            settingsButton()
+                        },
                         imageVector = Icons.Outlined.Settings,
                         contentDescription = "Settings Button"
                     )
