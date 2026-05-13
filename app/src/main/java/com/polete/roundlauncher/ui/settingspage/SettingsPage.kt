@@ -1,6 +1,5 @@
 package com.polete.roundlauncher.ui.settingspage
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,18 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.polete.roundlauncher.Container
 import com.polete.roundlauncher.R
 
 @Composable
-fun SettingsPage(
+fun SettingsBack(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
     ) {
@@ -105,19 +106,69 @@ fun SettingsCard(
 }
 
 @Composable
-fun RoundSettings(
+fun SettingsPage(
     modifier: Modifier = Modifier,
+    onApply: (SettingsK) -> Unit
+) {
+    val settings = remember {
+        Container.settings.copy()
+    }
+    var heightText by rememberSaveable { mutableStateOf(settings.rlHeight.toString()) }
+    var widthText by rememberSaveable { mutableStateOf(settings.rlWidth.toString()) }
 
-    ) {
-    SettingsPage() {
-        Column {
-            Row(
-                modifier.weight(1f),
-                horizontalArrangement = Arrangement.SpaceAround,
-            ) {
-                Text(stringResource(R.string.height))
+    Box(modifier = Modifier.fillMaxSize()) {
 
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            SettingsBack() {
+                Column {
+
+                    SettingsCard() {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(stringResource(R.string.height))
+                            TextField(
+                                value = heightText,
+                                onValueChange = {
+                                    heightText = it
+                                    it.toIntOrNull()?.let { num ->
+                                        settings.rlHeight = num
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    SettingsCard() {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(stringResource(R.string.width))
+                            TextField(
+                                value = widthText,
+                                onValueChange = {
+                                    widthText = it
+                                    it.toIntOrNull()?.let { num ->
+                                        settings.rlWidth = num
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
             }
+        }
+
+        Button(
+            onClick = { onApply(settings) },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Text("Apply")
         }
     }
 }

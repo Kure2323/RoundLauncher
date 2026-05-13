@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RoundLauncherTheme {
-                AppNavigation()
+                AppNavigation(this)
             }
         }
     }

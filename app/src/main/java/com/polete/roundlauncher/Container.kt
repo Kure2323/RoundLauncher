@@ -3,6 +3,7 @@ package com.polete.roundlauncher
 import android.content.Context
 import com.polete.roundlauncher.system.cache.AppCache
 import com.polete.roundlauncher.system.cache.IconCache
+import com.polete.roundlauncher.ui.settingspage.SettingsK
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,6 +21,8 @@ object Container {
     // Scope
     lateinit var scope: CoroutineScope
 
+    lateinit var settings: SettingsK
+
 
     val appsChangedFlow = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1
@@ -27,10 +30,8 @@ object Container {
 
     fun init(c: Context) {
 
-        // Room
-
-        // val db = AppDatabase.getDatabse(c)
-        // appRepository = AppRepository(db.appDao)
+        // Settings/SharedPreferences
+        settings = SettingsK().loadSettings(c)
 
         // Cache
         appCache = AppCache(c)

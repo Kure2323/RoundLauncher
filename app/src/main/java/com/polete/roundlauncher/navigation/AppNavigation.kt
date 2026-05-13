@@ -1,6 +1,6 @@
 package com.polete.roundlauncher.navigation
 
-import androidx.compose.foundation.gestures.detectTapGestures
+import android.content.Context
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
@@ -12,12 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.polete.roundlauncher.Container
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.ui.drawpage.DrawerPage
 import com.polete.roundlauncher.ui.homepage.RoundLauncher
@@ -26,36 +26,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(c: Context) {
 
     val navController = rememberNavController()
     val viewModel: MainViewModel = viewModel()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-
-    val scope = rememberCoroutineScope()
-
-    val touchPolicy = remember(sheetState, scope) {
-        Modifier.pointerInput(Unit) {
-            detectTapGestures(
-                onTap = {
-                    scope.launch {
-                        sheetState.show()
-                    }
-                },
-                onLongPress = {
-
-                },
-                onPress = {
-
-                }
-            )
-
-        }
+    var settings = remember {
+        Container.settings
     }
 
-
+    val scope = rememberCoroutineScope()
 
     NavHost(
         navController = navController,
@@ -67,9 +49,7 @@ fun AppNavigation() {
             if (sheetState.isVisible) {
                 ModalBottomSheet(
                     // When the sheetState turns to hide
-                    onDismissRequest = {
-
-                    },
+                    onDismissRequest = {},
                     containerColor = Color.Black.copy(alpha = 0.3f),
                     sheetState = sheetState,
                     contentWindowInsets = { WindowInsets.statusBars },
@@ -87,8 +67,8 @@ fun AppNavigation() {
 
             RoundLauncher(
                 modifier = Modifier.fillMaxSize(),
-                radiusX = 100.dp,
-                radiusY = 100.dp,
+                radiusX = settings.rlWidth.dp,
+                radiusY = settings.rlHeight.dp,
                 viewModel = viewModel,
                 onTap = {
                     scope.launch {
@@ -103,7 +83,10 @@ fun AppNavigation() {
         }
 
         composable(Screens.Settings.route) {
+            SettingsPage() {
+                settings = it.applySettings(c)
 
+            }
 
         }
 
