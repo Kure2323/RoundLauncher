@@ -33,3 +33,7 @@ fun launchUApp(c: Context, app: UApp) {
         Toast.makeText(c, R.string.app_launch_error,Toast.LENGTH_SHORT).show()
     }
 }
+
+fun getKey(app: UApp): String {
+    return "${app.packageName}-${app.user.hashCode()}"
+}

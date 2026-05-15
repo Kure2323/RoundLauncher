@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
+import com.polete.roundlauncher.system.getKey
 import com.polete.roundlauncher.ui.components.AppIcon
 import com.polete.roundlauncher.ui.settingspage.SettingsK
 import kotlinx.coroutines.launch
@@ -181,9 +182,9 @@ fun AppGrid(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(filteredList, key = { "${it.packageName}-${it.user.hashCode()}" }) { app ->
+        items(filteredList, key = { getKey(it) }) { app ->
 
-            val bitmap = icons["${app.packageName}-${app.user.hashCode()}"]
+            val bitmap = icons[getKey(app)]
 
             AppIcon(
                 app = app,

@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.polete.roundlauncher.data.UApp
 import com.polete.roundlauncher.data.local.entity.AppKey
+import com.polete.roundlauncher.system.getKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -68,7 +69,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             }
 
             val icons = apps.associate {
-                val key = "${it.packageName}-${it.user.hashCode()}"
+                val key = getKey(it)
                 key to getIcon(it)
             }
 
@@ -80,7 +81,10 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         }
     }
 
-
+    /**
+     * CUIDADO CON DONDE USAS ESTO POL, NO TE PASES QUE EXPLOTA TODO
+     * Y NO QUEREMOS ESO
+     */
     private suspend fun getIcon(uApp: UApp): Bitmap {
         return iconCache.getIcon(uApp)
     }
@@ -89,7 +93,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         viewModelScope.launch {
             repo.insert(
                 AppKey(
-                    key = "${app.packageName}-${app.user.hashCode()}"
+                    key = getKey(app)
                 )
             )
         }
@@ -99,10 +103,23 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         viewModelScope.launch {
             repo.delete(
                 AppKey(
-                    key = "${app.packageName}-${app.user.hashCode()}"
+                    key = getKey(app)
                 )
             )
         }
+    }
+
+    fun appCheckBoxAction(app: UApp): Boolean {
+        val key = getKey(app)
+
+        if (dbList.value.contains(key)) {
+            deleteRL(app)
+            return false
+        } else {
+            insertRL(app)
+            return true
+        }
+
     }
 
     fun launchUApp(app: UApp) {

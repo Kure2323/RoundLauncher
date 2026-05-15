@@ -1,10 +1,12 @@
 package com.polete.roundlauncher.ui.settingspage
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -37,6 +41,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.Container
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.R
+import com.polete.roundlauncher.data.UApp
+import com.polete.roundlauncher.system.getKey
+import com.polete.roundlauncher.ui.components.AppIcon
 
 @Composable
 fun SettingsBack(
@@ -113,9 +120,7 @@ fun SettingsPage(
 ) {
     val allApps by viewModel.appList.collectAsStateWithLifecycle()
     val _dbApps by viewModel.dbList.collectAsStateWithLifecycle()
-    val dbApps = allApps.filter { app ->
-        _dbApps.contains("${app.packageName}-${app.user.hashCode()}")
-    }
+    val icons by viewModel.iconList.collectAsStateWithLifecycle()
 
     val settings = Container.settings.copy()
 
@@ -128,167 +133,221 @@ fun SettingsPage(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        SettingsBack {
+            Column {
 
-            SettingsBack {
-                Column {
+                // App selection
+                LazyColumn(modifier.fillMaxSize()) {
 
-                    // Height
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.height),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            OutlinedTextField(
-                                value = heightText,
-                                onValueChange = {
-                                    heightText = it
-                                    it.toIntOrNull()?.let { num ->
-                                        settings.rlHeight = num
-                                    }
-                                },
-                                modifier = modifier.fillMaxSize().weight(4f),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
+                    item {
+                        // Height
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.height),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
                                 )
+                                OutlinedTextField(
+                                    value = heightText,
+                                    onValueChange = {
+                                        heightText = it
+                                        it.toIntOrNull()?.let { num ->
+                                            settings.rlHeight = num
+                                        }
+                                    },
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .weight(4f),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    )
 
-                            )
-                        }
-                    }
-
-                    // Width
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.width),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            OutlinedTextField(
-                                value = widthText,
-                                onValueChange = {
-                                    widthText = it
-                                    it.toIntOrNull()?.let { num ->
-                                        settings.rlWidth = num
-                                    }
-                                },
-                                modifier = modifier.fillMaxSize().weight(4f),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
                                 )
-                            )
+                            }
                         }
                     }
 
-                    // X
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.xOffset),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            OutlinedTextField(
-                                value = xOffset,
-                                onValueChange = {
-                                    xOffset = it
-                                    it.toIntOrNull()?.let { num ->
-                                        settings.xOffset = num
-                                    }
-                                },
-                                modifier = modifier.fillMaxSize().weight(4f),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
+                    item {
+
+                        // Width
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.width),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
                                 )
-                            )
-                        }
-                    }
-
-                    // Y
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.yOffset),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            OutlinedTextField(
-                                value = yOffset,
-                                onValueChange = {
-                                    yOffset = it
-                                    it.toIntOrNull()?.let { num ->
-                                        settings.yOffset = num
-                                    }
-                                },
-                                modifier = modifier.fillMaxSize().weight(4f),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
+                                OutlinedTextField(
+                                    value = widthText,
+                                    onValueChange = {
+                                        widthText = it
+                                        it.toIntOrNull()?.let { num ->
+                                            settings.rlWidth = num
+                                        }
+                                    },
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .weight(4f),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
 
-                    // IsSorted
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.isSorted),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            Checkbox(
-                                checked = isSorted,
-                                onCheckedChange = {
-                                    isSorted = it
-                                }
-                            )
+                    item {
+
+                        // X
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.xOffset),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
+                                )
+                                OutlinedTextField(
+                                    value = xOffset,
+                                    onValueChange = {
+                                        xOffset = it
+                                        it.toIntOrNull()?.let { num ->
+                                            settings.xOffset = num
+                                        }
+                                    },
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .weight(4f),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    )
+                                )
+                            }
                         }
                     }
 
-                    // IsInstant
-                    SettingsCard {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.isInstant),
-                                modifier.weight(2f),
-                                textAlign = TextAlign.Center
-                            )
-                            Checkbox(
-                                checked = isInstant,
-                                onCheckedChange = {
-                                    isInstant = it
-                                }
-                            )
+                    item {
+
+                        // Y
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.yOffset),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
+                                )
+                                OutlinedTextField(
+                                    value = yOffset,
+                                    onValueChange = {
+                                        yOffset = it
+                                        it.toIntOrNull()?.let { num ->
+                                            settings.yOffset = num
+                                        }
+                                    },
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .weight(4f),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    )
+                                )
+                            }
                         }
                     }
 
+                    item {
+
+                        // IsSorted
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.isSorted),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
+                                )
+                                Checkbox(
+                                    checked = isSorted,
+                                    onCheckedChange = {
+                                        isSorted = it
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        // IsInstant
+                        SettingsCard {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    stringResource(R.string.isInstant),
+                                    modifier.weight(2f),
+                                    textAlign = TextAlign.Center
+                                )
+                                Checkbox(
+                                    checked = isInstant,
+                                    onCheckedChange = {
+                                        isInstant = it
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier
+                            .fillMaxWidth()
+                            .padding(2.dp)
+                        )
+                    }
+
+                    item {
+                        Text(
+                            text = "App Selection",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = modifier.fillMaxWidth()
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier
+                            .fillMaxWidth()
+                            .padding(2.dp)
+                        )
+                    }
+
+                    items(items = allApps) {
+                        AppCard(
+                            app = it,
+                            bitmap = icons[getKey(it)],
+                            list = _dbApps
+                        )
+                    }
                 }
+
             }
         }
 
@@ -305,4 +364,38 @@ fun SettingsPage(
             Text("Apply")
         }
     }
+}
+
+@Composable
+fun AppCard(
+    viewModel: MainViewModel = viewModel(),
+    app: UApp,
+    bitmap: Bitmap?, list: List<String>
+) {
+
+    var isOn by rememberSaveable {
+        mutableStateOf(list.contains(getKey(app)))
+    }
+
+    SettingsCard {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize().padding(8.dp)
+        ) {
+            AppIcon(
+                app = app,
+                bitmap = bitmap
+            ) {/* No queremos que haga nada */}
+            Text(app.label)
+            Checkbox(
+                checked = isOn,
+                onCheckedChange = {
+                    viewModel.appCheckBoxAction(app)
+                    isOn = !isOn
+                }
+            )
+        }
+    }
+
 }
