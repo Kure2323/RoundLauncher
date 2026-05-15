@@ -38,7 +38,9 @@ fun RoundLauncher(
     onDoubleTap: () -> Unit,
     onPress: () -> Unit,
     onLongPress: () -> Unit,
-    boxModifier: Modifier = Modifier
+    boxModifier: Modifier = Modifier,
+    xOffset: Dp,
+    yOffset: Dp
 ) {
 
     // It is going to determinate the rotation in the wheel
@@ -71,6 +73,7 @@ fun RoundLauncher(
     ) {
         Box(
             modifier = boxModifier
+                .offset(x = xOffset, y = yOffset)
                 .size(radiusX * 2)
                 .pointerInput(radiusXPx, radiusYPx) {
 

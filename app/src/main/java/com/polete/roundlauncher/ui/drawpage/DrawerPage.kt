@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.data.UApp
 import com.polete.roundlauncher.ui.components.AppIcon
+import com.polete.roundlauncher.ui.settingspage.SettingsK
 import kotlinx.coroutines.launch
 
 
@@ -48,7 +49,8 @@ fun DrawerPage(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
     sheetState: SheetState,
-    settingsButton: () -> Unit
+    settingsButton: () -> Unit,
+    settings: SettingsK
     ) {
 
     // Data for getting and showing icons
@@ -129,7 +131,14 @@ fun DrawerPage(
                             sheetState.hide()
                         }
                     },
-                    appList = appList
+                    appList = if (settings.drIsSorted) {
+                        appList.sortedBy {
+                            it.label
+                        }
+                    } else {
+                        appList
+                    },
+                    isInstant = settings.sbIsInstant
                 )
 
             }
@@ -146,7 +155,8 @@ fun AppGrid(
     searchText: String,
     onAppClick: (UApp) -> Unit,
     appList: List<UApp>,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    isInstant: Boolean
 ) {
 
     val icons by viewModel.iconList.collectAsStateWithLifecycle()
@@ -160,7 +170,7 @@ fun AppGrid(
     }
 
     // Si la búsqueda de apps se reduce a 1, este se ejecuta
-    if (filteredList.size == 1) {
+    if (filteredList.size == 1 && isInstant) {
         onAppClick(filteredList.first())
     }
 

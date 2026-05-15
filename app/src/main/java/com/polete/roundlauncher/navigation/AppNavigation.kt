@@ -1,6 +1,7 @@
 package com.polete.roundlauncher.navigation
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
@@ -8,8 +9,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,6 +25,7 @@ import com.polete.roundlauncher.Container
 import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.ui.drawpage.DrawerPage
 import com.polete.roundlauncher.ui.homepage.RoundLauncher
+import com.polete.roundlauncher.ui.settingspage.SettingsK
 import com.polete.roundlauncher.ui.settingspage.SettingsPage
 import kotlinx.coroutines.launch
 
@@ -33,9 +38,10 @@ fun AppNavigation(c: Context) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-    var settings = remember {
-        Container.settings
+    var settings: SettingsK by remember {
+        mutableStateOf(Container.settings)
     }
+
 
     val scope = rememberCoroutineScope()
 
@@ -45,6 +51,9 @@ fun AppNavigation(c: Context) {
     ) {
 
         composable(Screens.HomePage.route) {
+
+            // Blocks the 'go back' action
+            BackHandler(enabled = true) { }
 
             if (sheetState.isVisible) {
                 ModalBottomSheet(
@@ -60,7 +69,8 @@ fun AppNavigation(c: Context) {
                         sheetState = sheetState,
                         settingsButton = {
                             navController.navigate(Screens.Settings.route)
-                        }
+                        },
+                        settings = settings
                     )
                 }
             }
@@ -77,17 +87,18 @@ fun AppNavigation(c: Context) {
                 },
                 onDoubleTap = {},
                 onPress = {},
-                onLongPress = {}
+                onLongPress = {},
+                xOffset = settings.xOffset.dp,
+                yOffset = settings.yOffset.dp
             )
 
         }
 
         composable(Screens.Settings.route) {
-            SettingsPage() {
+            SettingsPage {
                 settings = it.applySettings(c)
-
+                navController.popBackStack()
             }
-
         }
 
     }
