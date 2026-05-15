@@ -8,12 +8,23 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.polete.roundlauncher.data.UApp
+import com.polete.roundlauncher.data.local.entity.AppKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
+
+    private val repo = Container.repo
+
+    val dbList = repo.getAll().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     private val appCache = Container.appCache
     private val iconCache = Container.iconCache
@@ -72,6 +83,26 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     private suspend fun getIcon(uApp: UApp): Bitmap {
         return iconCache.getIcon(uApp)
+    }
+
+    fun insertRL(app: UApp) {
+        viewModelScope.launch {
+            repo.insert(
+                AppKey(
+                    key = "${app.packageName}-${app.user.hashCode()}"
+                )
+            )
+        }
+    }
+
+    fun deleteRL(app: UApp) {
+        viewModelScope.launch {
+            repo.delete(
+                AppKey(
+                    key = "${app.packageName}-${app.user.hashCode()}"
+                )
+            )
+        }
     }
 
     fun launchUApp(app: UApp) {

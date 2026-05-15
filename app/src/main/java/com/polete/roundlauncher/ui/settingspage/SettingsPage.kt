@@ -32,7 +32,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.Container
+import com.polete.roundlauncher.MainViewModel
 import com.polete.roundlauncher.R
 
 @Composable
@@ -105,9 +108,16 @@ fun SettingsCard(
 @Composable
 fun SettingsPage(
     modifier: Modifier = Modifier,
+    viewModel: MainViewModel = viewModel(),
     onApply: (SettingsK) -> Unit
 ) {
-    var settings = Container.settings.copy()
+    val allApps by viewModel.appList.collectAsStateWithLifecycle()
+    val _dbApps by viewModel.dbList.collectAsStateWithLifecycle()
+    val dbApps = allApps.filter { app ->
+        _dbApps.contains("${app.packageName}-${app.user.hashCode()}")
+    }
+
+    val settings = Container.settings.copy()
 
     var heightText by rememberSaveable { mutableStateOf(settings.rlHeight.toString()) }
     var widthText by rememberSaveable { mutableStateOf(settings.rlWidth.toString()) }

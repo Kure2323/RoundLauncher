@@ -48,8 +48,20 @@ fun RoundLauncher(
     var rotation by remember { mutableFloatStateOf(0f) }
 
     val _appList by viewModel.appList.collectAsStateWithLifecycle()
-    val appList = _appList.filter {
-        it.label.lowercase().contains("p")
+    val dbList by viewModel.dbList.collectAsStateWithLifecycle()
+
+    val appList = remember(_appList, dbList) {
+        if (dbList.isEmpty()) {
+            try {
+                _appList.take(10)
+            } catch (_: Exception) {
+                _appList
+            }
+        } else {
+            _appList.filter { app ->
+                dbList.contains("${app.packageName}-${app.user.hashCode()}")
+            }
+        }
     }
 
 

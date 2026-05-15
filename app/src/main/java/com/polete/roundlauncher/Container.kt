@@ -1,6 +1,8 @@
 package com.polete.roundlauncher
 
 import android.content.Context
+import com.polete.roundlauncher.data.local.db.AppDatabase
+import com.polete.roundlauncher.data.repo.AppKeyRepo
 import com.polete.roundlauncher.system.cache.AppCache
 import com.polete.roundlauncher.system.cache.IconCache
 import com.polete.roundlauncher.ui.settingspage.SettingsK
@@ -18,6 +20,9 @@ object Container {
     lateinit var appCache: AppCache
     lateinit var iconCache: IconCache
 
+    // BBDD
+    lateinit var repo: AppKeyRepo
+
     // Scope
     lateinit var scope: CoroutineScope
 
@@ -29,6 +34,9 @@ object Container {
     )
 
     fun init(c: Context) {
+
+        // BBDD
+        repo = AppKeyRepo(AppDatabase.getDatabase(c).dao())
 
         // Settings/SharedPreferences
         settings = SettingsK().loadSettings(c)
