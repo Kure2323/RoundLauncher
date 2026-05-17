@@ -345,23 +345,27 @@ fun SettingsPage(
                             list = _dbApps
                         )
                     }
+                    item {
+                        Spacer(modifier.height(48.dp))
+                    }
                 }
 
             }
+            Button(
+                onClick = {
+                    settings.drIsSorted = isSorted
+                    settings.sbIsInstant = isInstant
+                    onApply(settings)
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Text("Apply")
+            }
         }
 
-        Button(
-            onClick = {
-                settings.drIsSorted = isSorted
-                settings.sbIsInstant = isInstant
-                onApply(settings)
-                      },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Text("Apply")
-        }
+
     }
 }
 
