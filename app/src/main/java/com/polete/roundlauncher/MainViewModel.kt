@@ -63,7 +63,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private fun loadApps() {
         viewModelScope.launch {
 
-            val apps = appCache.getApps()
+            val apps = appCache.getApps(application)
             launch(Dispatchers.Main) {
                 _appList.value = apps
             }
@@ -86,7 +86,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
      * Y NO QUEREMOS ESO
      */
     private suspend fun getIcon(uApp: UApp): Bitmap {
-        return iconCache.getIcon(uApp)
+        return iconCache.getIcon(uApp, application)
     }
 
     fun insertRL(app: UApp) {

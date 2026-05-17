@@ -6,15 +6,17 @@ import android.graphics.Bitmap
 import android.util.LruCache
 import androidx.core.graphics.drawable.toBitmap
 import com.polete.roundlauncher.data.UApp
+import com.polete.roundlauncher.system.getKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class IconCache(private val c: Context) {
+class IconCache {
 
     private val cache = object : LruCache<String, Bitmap>(300) {}
-    private val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-    suspend fun getIcon(uApp: UApp): Bitmap = withContext(Dispatchers.IO) {
-        val key = "${uApp.packageName}-${uApp.user.hashCode()}"
+    suspend fun getIcon(uApp: UApp, c: Context): Bitmap = withContext(Dispatchers.IO) {
+        val lam = c.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+
+        val key = getKey(uApp)
         cache.get(key)?.let { return@withContext it }
 
 

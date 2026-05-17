@@ -7,12 +7,12 @@ import com.polete.roundlauncher.data.UApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AppCache(private val c: Context) {
+class AppCache {
 
 
     private var cacheApps: List<UApp>? = null
 
-    suspend fun getApps(): List<UApp> = withContext(Dispatchers.IO) {
+    suspend fun getApps(c: Context): List<UApp> = withContext(Dispatchers.IO) {
 
         cacheApps?.let { return@withContext it }
 

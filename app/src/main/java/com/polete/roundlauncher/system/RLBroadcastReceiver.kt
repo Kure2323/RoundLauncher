@@ -4,12 +4,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.polete.roundlauncher.Container
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 
 class RLBroadcastReceiver() : BroadcastReceiver() {
 
-    private val scope = Container.scope
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val appCache = Container.appCache
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -18,16 +21,16 @@ class RLBroadcastReceiver() : BroadcastReceiver() {
             Intent.ACTION_PACKAGE_ADDED,
             Intent.ACTION_PACKAGE_REMOVED,
             Intent.ACTION_PACKAGE_CHANGED -> {
-                onAppsChange() // actualizar lista de apps
+                context?.let { onAppsChange(it) } // actualizar lista de apps
             }
         }
 
     }
 
-    private fun onAppsChange() {
+    private fun onAppsChange(c: Context) {
         scope.launch {
             appCache.clearCache()
-            appCache.getApps()
+            appCache.getApps(c)
             Container.appsChangedFlow.emit(Unit)
         }
     }

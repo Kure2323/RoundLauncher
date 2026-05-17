@@ -1,6 +1,7 @@
 package com.polete.roundlauncher.ui.settingspage
 
 import android.content.Context
+import androidx.core.content.edit
 import com.polete.roundlauncher.Container
 
 data class SettingsK(
@@ -15,14 +16,14 @@ data class SettingsK(
     fun applySettings(context: Context): SettingsK {
         val settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
-        settings.edit()
-            .putInt("rlHeight", rlHeight)
-            .putInt("rlWidth", rlWidth)
-            .putBoolean("sbIsInstant", sbIsInstant)
-            .putBoolean("drIsSorted", drIsSorted)
-            .putInt("xOffset", xOffset)
-            .putInt("yOffset", yOffset)
-            .apply()
+        settings.edit {
+            putInt("rlHeight", rlHeight)
+                .putInt("rlWidth", rlWidth)
+                .putBoolean("sbIsInstant", sbIsInstant)
+                .putBoolean("drIsSorted", drIsSorted)
+                .putInt("xOffset", xOffset)
+                .putInt("yOffset", yOffset)
+        }
         val newSettings = loadSettings(context)
         Container.settings = newSettings
         return newSettings

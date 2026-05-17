@@ -55,7 +55,6 @@ fun SettingsBack(
         modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background),
-        contentWindowInsets = WindowInsets(),
         topBar = {
             Text(
                 text = stringResource(R.string.settings),
@@ -391,8 +390,8 @@ fun AppCard(
             Checkbox(
                 checked = isOn,
                 onCheckedChange = {
-                    viewModel.appCheckBoxAction(app)
-                    isOn = !isOn
+                    isOn = viewModel.appCheckBoxAction(app)
+
                 }
             )
         }
