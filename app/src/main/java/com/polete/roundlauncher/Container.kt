@@ -6,7 +6,7 @@ import com.polete.roundlauncher.data.repo.AppKeyRepo
 import com.polete.roundlauncher.system.cache.AppCache
 import com.polete.roundlauncher.system.cache.IconCache
 import com.polete.roundlauncher.ui.settingspage.SettingsK
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object Container {
 
@@ -20,9 +20,7 @@ object Container {
     lateinit var settings: SettingsK
 
 
-    val appsChangedFlow = MutableSharedFlow<Unit>(
-        extraBufferCapacity = 1
-    )
+    val appsChangedFlow = MutableStateFlow(0)
 
     fun init(c: Context) {
 

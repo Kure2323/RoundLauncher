@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polete.roundlauncher.MainViewModel
+import com.polete.roundlauncher.system.getKey
 import com.polete.roundlauncher.ui.components.AppIcon
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -50,19 +51,18 @@ fun RoundLauncher(
     val _appList by viewModel.appList.collectAsStateWithLifecycle()
     val dbList by viewModel.dbList.collectAsStateWithLifecycle()
 
-    val appList = remember(_appList, dbList) {
-        if (dbList.isEmpty()) {
-            try {
-                _appList.take(10)
-            } catch (_: Exception) {
-                _appList
-            }
-        } else {
-            _appList.filter { app ->
-                dbList.contains("${app.packageName}-${app.user.hashCode()}")
-            }
+    val appList = if (dbList.isEmpty()) {
+        try {
+            _appList.take(10)
+        } catch (_: Exception) {
+            _appList
+        }
+    } else {
+        _appList.filter { app ->
+            dbList.contains(getKey(app))
         }
     }
+
 
 
     val iconList by viewModel.iconList.collectAsStateWithLifecycle()
@@ -141,7 +141,7 @@ fun RoundLauncher(
                 val x = radiusXPx * cos(radians)
                 val y = radiusYPx * sin(radians)
 
-                val bitmap = iconList["${app.packageName}-${app.user.hashCode()}"]
+                val bitmap = iconList[getKey(app)]
 
                 Box(boxModifier.offset {
                     IntOffset(x.roundToInt(), y.roundToInt())

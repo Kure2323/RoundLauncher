@@ -11,11 +11,15 @@ import com.polete.roundlauncher.data.UApp
 import com.polete.roundlauncher.data.local.entity.AppKey
 import com.polete.roundlauncher.system.getKey
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
 
@@ -61,23 +65,32 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
      * de cada una de ellas.
      */
     private fun loadApps() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val apps = appCache.getApps(application)
-            launch(Dispatchers.Main) {
+
+            /*
+            Recolecta todos los iconos paralelamente y luego los hace map una vez
+            todos estén cargados y almacenados, de esta forma no se van cargando de
+            uno en uno y es mucho más rápido.
+             */
+            val icons = coroutineScope {
+
+                apps.map { app ->
+
+                    async {
+
+                        getKey(app) to getIcon(app)
+
+                    }
+                }.awaitAll().toMap()
+            }
+
+            withContext(Dispatchers.Main) {
+
                 _appList.value = apps
-            }
-
-            val icons = apps.associate {
-                val key = getKey(it)
-                key to getIcon(it)
-            }
-
-            launch(Dispatchers.Main) {
                 _iconList.value = icons
             }
-
-
         }
     }
 
