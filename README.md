@@ -34,7 +34,8 @@ Escrito en _Kotlin_ con _Jetpack Compose_.
 | <img width="250" alt="drawer" src="https://github.com/user-attachments/assets/dd8643b1-13b3-4651-9644-c0c9c2a68df8" /> | <img width="250" alt="settings" src="https://github.com/user-attachments/assets/e62524b5-fd6f-45fe-9b8e-c2145e7d4542" /> |
 
 ## Instalar última versión
-<img width="250" alt="qr" src="https://github.com/user-attachments/assets/328059ee-0d3c-4f79-a188-9313ad027162" />
+<img width="250" alt="qr" src="https://github.com/user-attachments/assets/45cb25d4-8487-4d50-afa4-b7fe194753a0" />
+
 
 ### Descargar APK
 [Última versión](https://github.com/Kure2323/RoundLauncher/releases/latest)
