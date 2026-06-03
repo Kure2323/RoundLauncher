@@ -10,12 +10,10 @@ Escrito en _Kotlin_ con _Jetpack Compose_.
 ### UI Framework
 - Jetpack Compose
 
-### Componentes Android
+### Otras
 - LauncherApps
 - BroadcastReceiver
 - SharedPreferences
-
-### Librerías Jetpack
 - Navigation Compose
 - Room
 
