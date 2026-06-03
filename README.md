@@ -1,10 +1,13 @@
 # RoundLauncher
 Launcher minimalista para dispositivos _Android_ enfocado en la velocidad, simplicidad y productividad.  
 Escrito en _Kotlin_ con _Jetpack Compose_.  
+
 ## Tecnologías
 
-### Framework
+### Lenguaje
 - Kotlin
+
+### UI Framework
 - Jetpack Compose
 
 ### Componentes Android
